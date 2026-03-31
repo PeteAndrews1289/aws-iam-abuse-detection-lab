@@ -1,1 +1,27 @@
 
+# Phase 3 - Log Analysis
+
+## Process
+
+- Refreshed CloudTrail logs from S3 after generating IAM activity
+- Uploaded logs into Splunk for analysis
+- Parsed JSON data using `spath` and `mvexpand`
+- Queried identity-related activity including user management, role assumption, and failed actions
+- Expanded searches beyond IAM to include AWS STS and other services
+
+## Result
+
+Successfully identified IAM-related activity including:
+
+- User creation and deletion
+- Policy attachment and detachment
+- Role assumption events
+- Failed API calls due to insufficient permissions
+
+## Insight
+
+Identity-related events in AWS are not limited to a single service.
+
+For example, role assumption events are recorded under AWS STS rather than IAM.
+
+This demonstrates the importance of broad search logic when building detections for cloud identity security.
