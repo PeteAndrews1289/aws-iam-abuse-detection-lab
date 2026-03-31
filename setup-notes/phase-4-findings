@@ -1,1 +1,32 @@
 
+# Phase 4 - Findings
+
+## Key Observations
+
+- IAM activity provides high-value visibility into access and privilege changes
+- Role assumption represents a critical event that may indicate privilege escalation or lateral movement
+- Failed API calls provide strong detection signals for unauthorized behavior
+- Identity enumeration is a common early-stage activity in cloud environments
+
+## Security Implications
+
+- Monitoring IAM activity is essential for detecting privilege misuse
+- Role-based access introduces complexity that must be carefully monitored
+- Failed actions can indicate attempted abuse even when access is denied
+
+## Limitations
+
+- Log ingestion was performed manually rather than in real time
+- Detection logic relies on query-based analysis rather than automated alerting
+
+## Improvements
+
+- Automate ingestion from S3 into Splunk
+- Implement real-time alerts for high-risk IAM events
+- Correlate multiple event types to identify complex attack patterns
+
+## Conclusion
+
+This project demonstrates how AWS IAM activity can be analyzed using CloudTrail and Splunk to identify potential security-relevant behavior.
+
+It highlights the importance of identity-focused monitoring in cloud security.
