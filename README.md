@@ -63,15 +63,6 @@ This project highlights how identity-related activity is distributed across mult
 
 ---
 
-## Screenshots
-
-### IAM Setup
-![IAM Setup](screenshots/aws/iam-user-created.png)
-
-### Splunk Detection Example
-![Splunk Detection](screenshots/splunk/assume-role.png)
-
----
 
 ## Future Improvements
 
