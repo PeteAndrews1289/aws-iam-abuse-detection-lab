@@ -1,1 +1,21 @@
 
+# Phase 2 - Simulated IAM Activity
+
+## Process
+
+- Generated IAM-related activity using AWS CLI and console actions
+- Listed IAM users and roles to simulate identity enumeration
+- Verified current identity using `sts get-caller-identity`
+- Listed S3 buckets and described EC2 instances to simulate resource discovery
+- Assumed the `LabAdminRole` role using AWS STS
+- Executed IAM administrative activity that resulted in creation of an additional IAM user
+
+## Result
+
+Produced IAM-related CloudTrail events including enumeration, resource discovery, role assumption, and identity creation activity.
+
+## Insight
+
+IAM activity provides some of the highest-value cloud security signals because it directly affects access and privilege within the AWS environment.
+
+Role assumption and user creation are especially important to monitor because they may represent administrative changes or privilege escalation pathways.
