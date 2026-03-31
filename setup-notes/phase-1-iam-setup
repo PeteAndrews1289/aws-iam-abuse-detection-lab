@@ -1,1 +1,20 @@
 
+# Phase 1 - IAM Setup
+
+## Process
+
+- Created a low-privilege IAM user named `lab-analyst-user`
+- Created a customer-managed IAM policy named `LabReadOnlyPolicy`
+- Configured the policy to allow limited read and enumeration actions
+- Attached the custom policy to the IAM user
+- Created an IAM role named `LabAdminRole` for role-based access testing
+
+## Result
+
+Established a safe IAM lab environment for generating identity-related CloudTrail events.
+
+## Insight
+
+IAM is one of the most important security layers in AWS because identities, roles, and policies directly control access to cloud resources.
+
+Creating a low-privilege user and a separate role provides a controlled way to simulate identity behavior, permission boundaries, and policy-related activity for detection testing.
