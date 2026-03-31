@@ -1,1 +1,53 @@
 
+# IAM Detection Queries
+
+## Process
+
+- Ingested CloudTrail logs into Splunk
+- Parsed JSON records using `spath` and `mvexpand`
+- Built detection queries focused on IAM activity and identity behavior
+
+---
+
+## IAM User Creation
+
+spl
+index=* sourcetype=_json
+| spath path=Records{} output=record
+| mvexpand record
+| spath input=record
+| search eventName="CreateUser"
+| table eventTime userIdentity.arn sourceIPAddress requestParameters.userName
+
+DeleteUser
+index=* sourcetype=_json
+| spath path=Records{} output=record
+| mvexpand record
+| spath input=record
+| search eventName="DeleteUser"
+| table eventTime userIdentity.arn requestParameters.userName sourceIPAddress
+
+Role Assumption
+index=* sourcetype=_json
+| spath path=Records{} output=record
+| mvexpand record
+| spath input=record
+| search eventName="AssumeRole"
+| table eventTime eventSource userIdentity.arn sourceIPAddress requestParameters.roleArn
+
+Failed Privilege
+index=* sourcetype=_json
+| spath path=Records{} output=record
+| mvexpand record
+| spath input=record
+| search errorCode=*
+| table eventTime eventSource eventName errorCode userIdentity.arn sourceIPAddress
+
+Identity Enumeration
+index=* sourcetype=_json
+| spath path=Records{} output=record
+| mvexpand record
+| spath input=record
+| search eventName IN ("ListUsers","ListRoles","GetCallerIdentity")
+| stats count by eventName userIdentity.arn
+| sort -count
