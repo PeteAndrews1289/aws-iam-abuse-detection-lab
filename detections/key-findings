@@ -1,1 +1,33 @@
 
+# Key Findings
+
+## Identity Activity is High Value
+
+IAM-related events provide critical insight into who is accessing resources and what actions they are performing.
+
+## Role Assumption is a Critical Signal
+
+The `AssumeRole` event is especially important because it represents a change in privilege and the use of temporary credentials.
+
+## Failed Actions are Strong Indicators
+
+Denied API calls provide valuable signals of attempted misuse or insufficient permissions.
+
+These events can highlight suspicious behavior even when no action was successfully completed.
+
+## Enumeration is an Early Indicator
+
+Actions such as listing users, roles, and resources are often performed before more impactful activity.
+
+Monitoring these events helps identify early-stage reconnaissance behavior.
+
+## Multi-Service Visibility is Required
+
+IAM activity spans multiple AWS services including:
+
+- IAM
+- STS
+- EC2
+- S3
+
+Effective detection requires visibility across all relevant event sources.
