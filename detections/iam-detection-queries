@@ -1,53 +1,105 @@
-
 # IAM Detection Queries
 
-## Process
+These Splunk searches analyze AWS CloudTrail records that were ingested as nested JSON. They are written for lab use and may need index, sourcetype, or field adjustments in another Splunk environment.
 
-- Ingested CloudTrail logs into Splunk
-- Parsed JSON records using `spath` and `mvexpand`
-- Built detection queries focused on IAM activity and identity behavior
+## Base CloudTrail Parser
 
----
+```spl
+index=* sourcetype=_json
+| spath path=Records{} output=record
+| mvexpand record
+| spath input=record
+```
+
+Purpose: expands the CloudTrail `Records` array so each AWS event can be searched individually.
 
 ## IAM User Creation
 
-spl
+```spl
 index=* sourcetype=_json
 | spath path=Records{} output=record
 | mvexpand record
 | spath input=record
 | search eventName="CreateUser"
 | table eventTime userIdentity.arn sourceIPAddress requestParameters.userName
+| sort -eventTime
+```
 
-DeleteUser
+Detection value: new IAM users can indicate administrative activity, onboarding, persistence, or preparation for privilege abuse.
+
+## IAM User Deletion
+
+```spl
 index=* sourcetype=_json
 | spath path=Records{} output=record
 | mvexpand record
 | spath input=record
 | search eventName="DeleteUser"
 | table eventTime userIdentity.arn requestParameters.userName sourceIPAddress
+| sort -eventTime
+```
 
-Role Assumption
+Detection value: user deletion can be legitimate cleanup, but during an investigation it may indicate an attempt to remove evidence or disable access.
+
+## Role Assumption
+
+```spl
 index=* sourcetype=_json
 | spath path=Records{} output=record
 | mvexpand record
 | spath input=record
 | search eventName="AssumeRole"
-| table eventTime eventSource userIdentity.arn sourceIPAddress requestParameters.roleArn
+| table eventTime eventSource userIdentity.arn sourceIPAddress requestParameters.roleArn responseElements.assumedRoleUser.arn
+| sort -eventTime
+```
 
-Failed Privilege
+Detection value: `AssumeRole` shows a privilege-context change and should be reviewed when investigating suspicious cloud activity.
+
+## Failed Privilege Attempts
+
+```spl
 index=* sourcetype=_json
 | spath path=Records{} output=record
 | mvexpand record
 | spath input=record
 | search errorCode=*
-| table eventTime eventSource eventName errorCode userIdentity.arn sourceIPAddress
+| table eventTime eventSource eventName errorCode errorMessage userIdentity.arn sourceIPAddress
+| sort -eventTime
+```
 
-Identity Enumeration
+Detection value: denied API calls can reveal reconnaissance, privilege probing, or misconfigured access.
+
+## Identity Enumeration
+
+```spl
 index=* sourcetype=_json
 | spath path=Records{} output=record
 | mvexpand record
 | spath input=record
-| search eventName IN ("ListUsers","ListRoles","GetCallerIdentity")
-| stats count by eventName userIdentity.arn
+| search eventName IN ("ListUsers","ListRoles","ListPolicies","GetCallerIdentity")
+| stats count values(sourceIPAddress) as source_ips by eventName userIdentity.arn
 | sort -count
+```
+
+Detection value: enumeration often occurs before privilege escalation or resource targeting.
+
+## Policy Attachment
+
+```spl
+index=* sourcetype=_json
+| spath path=Records{} output=record
+| mvexpand record
+| spath input=record
+| search eventName IN ("AttachUserPolicy","AttachRolePolicy","PutUserPolicy","PutRolePolicy")
+| table eventTime eventName userIdentity.arn sourceIPAddress requestParameters.userName requestParameters.roleName requestParameters.policyArn
+| sort -eventTime
+```
+
+Detection value: policy changes can directly alter privileges and should be reviewed for unauthorized escalation.
+
+## Triage Notes
+
+- Confirm whether the actor is expected to perform IAM administration.
+- Review source IP and user agent for unusual access patterns.
+- Correlate enumeration, failed calls, and policy changes within the same time window.
+- Prioritize role assumption and policy changes over read-only API activity.
