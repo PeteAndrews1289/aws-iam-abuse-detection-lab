@@ -1,5 +1,7 @@
 # AWS IAM Abuse Detection Lab
 
+> **Repository status — historical and consolidated:** This completed lab remains available as evidence of the original IAM and Splunk exercise. Its IAM searches and migration notes continue in the tested [AegisSOAR case study](https://github.com/PeteAndrews1289/aws-automated-soar-playbook), while regression-tested `AWS-IAM-001` and `AWS-ROOT-001` detection artifacts live in the [Detection Engineering Lab](https://github.com/PeteAndrews1289/detection-engineering-lab). No new implementation work is planned here.
+
 ## Overview
 
 This project is a focused AWS identity security lab for understanding how IAM activity appears in CloudTrail and how those events can be analyzed in Splunk. It addresses a common cloud security problem: many high-impact AWS attacks begin with identity enumeration, role assumption, policy changes, or failed privilege attempts, but those behaviors are easy to miss without structured log analysis.
